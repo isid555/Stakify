@@ -1,0 +1,175 @@
+import {useReadContract, useWriteContract} from 'wagmi'
+import { parseEther, formatEther } from 'viem';
+
+// Deployed Contract Details
+const contractAddress = '0x5e0109478cb3ac99Cb3D23C2D56D1fE2fD325671';
+const contractABI = [
+    {
+        "type": "function",
+        "name": "getContractAddress",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getContractBalance",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "stake",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "payable"
+    },
+    {
+        "type": "function",
+        "name": "stakedBalances",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "totalStaked",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "unstake",
+        "inputs": [
+            {
+                "name": "amount",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "payable"
+    },
+    {
+        "type": "event",
+        "name": "StakeEvent",
+        "inputs": [
+            {
+                "name": "staker",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "amountParam",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "ethSent",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    }
+]
+
+// Stake Function
+export const Stake = () => {
+    const { writeContract, isPending } = useWriteContract();
+
+    return (
+        <button
+            onClick={() =>
+                writeContract({
+                    address: contractAddress,
+                    abi: contractABI,
+                    functionName: 'stake',
+                    value: parseEther('0.1'),
+                })
+            }
+            disabled={isPending}
+        >
+            {isPending ? 'Staking...' : 'Stake 0.1 ETH'}
+        </button>
+    );
+};
+
+// Unstake Function
+export const Unstake = () => {
+    const { writeContract, isPending } = useWriteContract();
+
+    return (
+        <button
+            onClick={() =>
+                writeContract({
+                    address: contractAddress,
+                    abi: contractABI,
+                    functionName: 'unstake',
+                    args: [parseEther('0.1')],
+                })
+            }
+            disabled={isPending}
+        >
+            {isPending ? 'Unstaking...' : 'Unstake 0.1 ETH'}
+        </button>
+    );
+};
+
+// Get Contract Balance
+export const ContractBalance = () => {
+    const { data, isLoading, isError } = useReadContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: 'getContractBalance',
+    });
+
+    if (isError) return <p>Error fetching balance</p>;
+
+    return (
+        <p>
+            Contract Balance: {
+            isLoading
+                ? 'Loading...'
+                : formatEther(typeof data === 'bigint' ? data : BigInt(0))
+        } ETH
+
+
+        </p>
+    );
+};
