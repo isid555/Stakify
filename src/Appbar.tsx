@@ -21,16 +21,16 @@ export function Appbar() {
 function Connectors() {
     const {connectors, connect} = useConnect()
     return connectors.map((connector) => (
-        <button className='mx-2 border rounded p-2' key={connector.uid} onClick={() => {
-
-            connect({ connector })
-        }
-
-
-
-        }>
+        <button
+            className="mx-2 border border-gray-500 rounded p-3 font-semibold text-white
+             bg-gray-800 hover:bg-purple-600 transition duration-200
+             transform hover:scale-105 active:scale-95 shadow-lg"
+            key={connector.uid}
+            onClick={() => connect({connector})}
+        >
             {connector.name}
         </button>
+
     ))
 }
 
